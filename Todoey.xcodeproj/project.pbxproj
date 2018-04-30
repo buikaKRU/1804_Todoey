@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		40606B672097CAAF003250E2 /* CustomItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40606B652097CAAF003250E2 /* CustomItemCell.swift */; };
+		40606B682097CAAF003250E2 /* CustomItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40606B662097CAAF003250E2 /* CustomItemCell.xib */; };
 		40C4957D20938EDF00D78B88 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C4957C20938EDF00D78B88 /* AppDelegate.swift */; };
 		40C4957F20938EDF00D78B88 /* ToDoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C4957E20938EDF00D78B88 /* ToDoListViewController.swift */; };
 		40C4958220938EDF00D78B88 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40C4958020938EDF00D78B88 /* Main.storyboard */; };
@@ -16,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		40606B652097CAAF003250E2 /* CustomItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CustomItemCell.swift; path = Todoey/Views/CustomItemCell/CustomItemCell.swift; sourceTree = SOURCE_ROOT; };
+		40606B662097CAAF003250E2 /* CustomItemCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = CustomItemCell.xib; path = Todoey/Views/CustomItemCell/CustomItemCell.xib; sourceTree = SOURCE_ROOT; };
 		40C4957920938EDF00D78B88 /* Todoey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40C4957C20938EDF00D78B88 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		40C4957E20938EDF00D78B88 /* ToDoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoListViewController.swift; sourceTree = "<group>"; };
@@ -37,6 +41,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		40606B692097CACC003250E2 /* CustomItemCell */ = {
+			isa = PBXGroup;
+			children = (
+				40606B652097CAAF003250E2 /* CustomItemCell.swift */,
+				40606B662097CAAF003250E2 /* CustomItemCell.xib */,
+			);
+			path = CustomItemCell;
+			sourceTree = "<group>";
+		};
 		40C4957020938EDE00D78B88 = {
 			isa = PBXGroup;
 			children = (
@@ -85,6 +98,7 @@
 		40C495922096157D00D78B88 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				40606B692097CACC003250E2 /* CustomItemCell */,
 				40C4958020938EDF00D78B88 /* Main.storyboard */,
 			);
 			path = Views;
@@ -159,6 +173,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				40C4958720938EDF00D78B88 /* LaunchScreen.storyboard in Resources */,
+				40606B682097CAAF003250E2 /* CustomItemCell.xib in Resources */,
 				40C4958420938EDF00D78B88 /* Assets.xcassets in Resources */,
 				40C4958220938EDF00D78B88 /* Main.storyboard in Resources */,
 			);
@@ -172,6 +187,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				40C4957F20938EDF00D78B88 /* ToDoListViewController.swift in Sources */,
+				40606B672097CAAF003250E2 /* CustomItemCell.swift in Sources */,
 				40C4958F20960A0B00D78B88 /* Item.swift in Sources */,
 				40C4957D20938EDF00D78B88 /* AppDelegate.swift in Sources */,
 			);

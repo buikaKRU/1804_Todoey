@@ -8,28 +8,31 @@
 
 import Foundation
 
-class Item {
+class Item: Encodable, Decodable {
     var title: String = ""
     var done: Bool = false
     
-    let date = Date()
+    let dateCreated = Date()
     let calendar = Calendar.current
     
-    var year: Int
-    var hour: Int
-    var minute: Int
+    //var year: Int
+    //var hour: Int
+    //var minute: Int
     
     init (title: String){
         self.title = title
         
-        self.year = calendar.component(.year, from: date)
-        self.hour = calendar.component(.hour, from: date)
-        self.minute = calendar.component(.minute, from: date)
     }
+        
+        //self.year = calendar.component(.year, from: dateCreated)
+        //self.hour = calendar.component(.hour, from: dateCreated)
+        //self.minute = calendar.component(.minute, from: dateCreated)
+    //}
     
     func printNow() {
         print(title, done)
-        print("hour ============== \(hour):\(minute) year:\(year)")
+        //print("hour ============== \(hour):\(minute) year:\(year)")
+        print("Date Created: \(dateCreated)")
     }
     
 }

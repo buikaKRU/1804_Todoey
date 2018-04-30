@@ -22,7 +22,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         print("App did finished lunchnig")
         
-        print(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true))
         
         return true
     }

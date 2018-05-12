@@ -7,27 +7,45 @@
 //
 
 import UIKit
+import CoreData
 
 class ToDoListViewController: UITableViewController {
 
     var itemArray = [Item]()
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask ).first?.appendingPathComponent("Items.plist")
+    var selectedCategory : Category? {
+        
+        //didSet getsfired when selectedCategory variable gets a value
+        didSet{
+            
+            //Read stored default data
+            loadItems()
+            
+            
+        }
+    }
+    
+    
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask )
+    
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
+    //let request : NSFetchRequest<Item> = Item.fetchRequest()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        print(dataFilePath!)
+        print(dataFilePath)
         
         //Tableview style
         self.tableView.separatorStyle = .none
         
         
-        //Read stored default data
-        loadItems()
+
         
-        tableView.register(UINib(nibName: "CustomItemCell", bundle: nil), forCellReuseIdentifier: "customItemCell")
+        //tableView.register(UINib(nibName: "CustomItemCell", bundle: nil), forCellReuseIdentifier: "customItemCell")
         
 
 
@@ -35,7 +53,7 @@ class ToDoListViewController: UITableViewController {
 
     
     
-    //MARK - TableView Datasource Methods
+    //MARK: - TableView Datasource Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemArray.count
     }
@@ -63,11 +81,11 @@ class ToDoListViewController: UITableViewController {
     
     
     
-    //MARK TableView Delegate Methods
+    //MARK: - TableView Delegate Methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(indexPath.row)
-        print(itemArray[indexPath.row].title)
+        print(itemArray[indexPath.row].title!)
         
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
@@ -79,7 +97,7 @@ class ToDoListViewController: UITableViewController {
     
     
     
-    //MARK Add new items
+    //MARK: - Add new items
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
@@ -94,9 +112,15 @@ class ToDoListViewController: UITableViewController {
             if textField.text! == ""{
                 textField.text = "New Item"
             }
+        
             
-            let newItem = Item(title: textField.text!)
-            newItem.printNow()
+            let newItem = Item(context: self.context)
+            newItem.title = textField.text
+      
+            newItem.dateCreated = Date()
+            
+            newItem.parentCategory = self.selectedCategory
+            
             
             self.itemArray.append(newItem)
             
@@ -126,15 +150,12 @@ class ToDoListViewController: UITableViewController {
     
     
     
-    //MARK Model Manipulation methods
+    //MARK: - Model Manipulation methods
     
     func saveItem(){
         
-        let encoder = PropertyListEncoder()
-        
         do {
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            try context.save()
         } catch {
             print("Error encoding data \(error)")
         }
@@ -144,23 +165,79 @@ class ToDoListViewController: UITableViewController {
     
     
     
-    func loadItems() {
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
         
-        if let data = try? Data(contentsOf: dataFilePath!){
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("Error decoding items array: \(error)")
-            }
-            
+        let categoryPredicate = NSPredicate(format: "parentCategory.name CONTAINS[cd] %@", (selectedCategory?.name)!)
+        
+        //let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, predicate])
+        //request.predicate = compoundPredicate
+        
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        } else {
+            request.predicate = categoryPredicate
         }
         
+        do {
+            itemArray = try context.fetch(request)
+        } catch {
+            print("Error decoding items array: \(error)")
+        }
         
+        tableView.reloadData()
+    
+    }
+    
+    func refreshSearch(searchText: String = ""){
         
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
         
+        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchText)
         
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
+        loadItems(with: request, predicate: predicate)
+    }
+    
+    
+}
+
+
+
+
+
+
+//MARK: - Search Bar Methods
+
+extension ToDoListViewController: UISearchBarDelegate{
+    
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print("Search button clicked!! \(searchBar.text!)")
+        
+        refreshSearch(searchText: searchBar.text!)
+
+    }
+    
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        print("aktualny search bar: \(searchBar.text ?? "")")
+        
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            
+            
+            //unselecting searchbar
+            
+            DispatchQueue.main.async{
+               searchBar.resignFirstResponder()
+            }
+            
+            
+        } else {
+            refreshSearch(searchText: searchBar.text!)
+        }
     }
 }
 

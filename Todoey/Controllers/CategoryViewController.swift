@@ -7,22 +7,20 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class CategoryViewController: UITableViewController {
     
+    let realm = try! Realm()
     
-    var categoryArray = [Category]()
+    var categories: Results<Category>?
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask )
-    
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    //let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask )
+
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        print("dat file pathis: \(dataFilePath)")
         
         //Tableview style
         self.tableView.separatorStyle = .none
@@ -33,16 +31,15 @@ class CategoryViewController: UITableViewController {
 
     //MARK: - TableView Datasource Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categoryArray.count
+        return categories?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoCategoryCell", for: indexPath)
         
-        let category = categoryArray[indexPath.row]
         
-        cell.textLabel?.text = category.name
+        cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories Added Yet"
         
         return cell
         
@@ -62,15 +59,13 @@ class CategoryViewController: UITableViewController {
                 textField.text = "New Category"
             }
             
-            let newCategory = Category(context: self.context)
+            let newCategory = Category()
             
-            newCategory.name = textField.text
+            newCategory.name = textField.text!
             newCategory.dateCreated = Date()
             newCategory.finished = false
             
-            self.categoryArray.append(newCategory)
-            
-            self.saveCategory()
+            self.saveCategory(category: newCategory)
             
             self.tableView.reloadData()
             
@@ -99,9 +94,11 @@ class CategoryViewController: UITableViewController {
     
     //MARK: - Data Manipulation Methods
     
-    func saveCategory(){
+    func saveCategory(category: Category){
         do{
-            try context.save()
+            try realm.write {
+                realm.add(category)
+            }
         } catch {
             print("error saving to database: \(error)")
         }
@@ -111,11 +108,8 @@ class CategoryViewController: UITableViewController {
     
 
     func loadCategory(){
-        do{
-            try categoryArray = try context.fetch(Category.fetchRequest())
-        } catch {
-            print("error fetching: \(error)")
-        }
+        
+        categories = realm.objects(Category.self)
         
         tableView.reloadData()
 
@@ -128,7 +122,6 @@ class CategoryViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(indexPath.row)
-        print("********************************************** \(categoryArray[indexPath.row].name!)")
         
         performSegue(withIdentifier: "goToItems", sender: self)
     }
@@ -138,7 +131,7 @@ class CategoryViewController: UITableViewController {
         let destinationVC = segue.destination as! ToDoListViewController
         
         if let indexPath = tableView.indexPathForSelectedRow{
-            destinationVC.selectedCategory = categoryArray[indexPath.row]
+            destinationVC.selectedCategory = categories?[indexPath.row]
         }
         
     }
